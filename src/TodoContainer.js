@@ -4,7 +4,14 @@ import TodoList from "./TodoList";
 export default function TodoContainer() {
   const [newTodo, setNewTodo] = useState("");
   const [todo, setTodo] = useState({ todoTitle: " ", isEditing: false });
- 
+  const [todoList, setTodoList] = useState([
+    {
+      id: "id1",
+      todoTitle: "Todo App 만들기",
+      isEditing: false,
+    },
+    { id: "id2", todoTitle: "REACT 공식문서 공부", isEditing: false },
+  ]);
   const edit = () => {
     setTodo({ ...todo, isEditing: !todo.isEditing });
   };
@@ -27,12 +34,15 @@ export default function TodoContainer() {
       </div>
 
       <ul className="todolistBox">
-        <TodoList
+        {todoList.map(t=>(
+          <TodoList
           isEditing={todo.isEditing}
           todoTitle={todo.todoTitle}
           edit={edit}
           handleText={handleText}
         />
+        ))}
+        
         <li className="todolist">
           <p>{todo.todoTitle}</p>
           <button>수정</button>
