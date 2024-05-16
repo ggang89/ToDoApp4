@@ -1,53 +1,89 @@
 import { useState } from "react";
 import TodoList from "./TodoList";
+import { v4 as uuidv4 } from "uuid";
 
 export default function TodoContainer() {
-  const [newTodo, setNewTodo] = useState("");
-  const [todo, setTodo] = useState({ todoTitle: " ", isEditing: false });
-  const [todoList, setTodoList] = useState([
-    {
-      id: "id1",
-      todoTitle: "Todo App 만들기",
+  const [addTodo, setAddTodo] = useState("");
+ 
+  
+  const [todoList, setTodoList] = useState([ ]);
+
+  //새로운 값 추가 버튼
+  const addText = () => {
+    const newArr = {
+      id: uuidv4(),
+      todoTitle: addTodo,
       isEditing: false,
-    },
-    { id: "id2", todoTitle: "REACT 공식문서 공부", isEditing: false },
-  ]);
-  const edit = () => {
-    setTodo({ ...todo, isEditing: !todo.isEditing });
-  };
-  const handleText = (e) => {
-    setTodo({ ...todo, todoTitle: e.target.value });
-    console.log(e.target.value);
+    };
     
+    setTodoList([newArr,...todoList ]);
+    setAddTodo("");
+    //새로운 ToDo넣어주고 input창 비우기
+  };
+  const handleAddText = (e) => {
+   
+    setAddTodo(e.target.value);
+    
+  };
+
+  const edit = (id) => {
+    const newArr = todoList.map((t) => {
+      if (id === t.id) {
+        return { ...t, isEditing: !t.isEditing };
+      } else {
+        return t;
+      }
+    });
+    setTodoList(newArr);
+  };
+  const del = (id) => {
+    const newList = todoList.filter((t) => {
+      return t.id !== id;
+    });
+    setTodoList(newList);
+  };
+ 
+  const handleTextInList = (e, id) => {
+    const newText = todoList.map((t) => {
+     
+      if (id === t.id) {
+        return { ...t, todoTitle: e.target.value };
+      } else {
+        return t;
+      }
+    });
+    setTodoList(newText);
   };
   return (
     <>
       <div className="addTodo">
-        <label htmlFor="todo">NEW ToDo </label>
+        <label htmlFor="todo" className="label">
+          NEW ToDo{" "}
+        </label>
         <input
           id="todo"
           type="text"
-          size="50"
+          size="48"
+          value={addTodo}
           placeholder="Add Todo..."
+          onChange={handleAddText}
         ></input>
-        <button>추가</button>
+        <button onClick={addText} className="btn">
+          추가
+        </button>
       </div>
 
       <ul className="todolistBox">
-        {todoList.map(t=>(
+        {todoList.map((t) => (
           <TodoList
-          isEditing={todo.isEditing}
-          todoTitle={todo.todoTitle}
-          edit={edit}
-          handleText={handleText}
-        />
+            key={t.id}
+            isEditing={t.isEditing}
+            todoTitle={t.todoTitle}
+            edit={() => edit(t.id)}
+            del={() => del(t.id)}
+            handleText={(e) => handleTextInList(e, t.id)}
+          />
         ))}
-        
-        <li className="todolist">
-          <p>{todo.todoTitle}</p>
-          <button>수정</button>
-          <button>삭제</button>
-        </li>
       </ul>
     </>
   );
